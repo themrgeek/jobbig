@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import posthog from "posthog-js";
 
 export function Footer() {
   return (
@@ -22,12 +25,14 @@ export function Footer() {
         <div className="flex items-center gap-6">
           <Link
             href="#"
+            onClick={() => posthog.capture("footer_link_clicked", { label: "privacy" })}
             className="text-xs text-text-secondary hover:text-accent transition-colors"
           >
             Privacy
           </Link>
           <Link
             href="#"
+            onClick={() => posthog.capture("footer_link_clicked", { label: "terms" })}
             className="text-xs text-text-secondary hover:text-accent transition-colors"
           >
             Terms

@@ -88,6 +88,13 @@ bg-accent text-accent-foreground text-sm font-medium px-4 sm:px-5 py-2 rounded-f
 hover: hover:opacity-90 transition-opacity
 ```
 
+**OAuth / social** — inset on `bg-surface` card (uses `bg-background` to contrast against the card)
+```
+bg-background border border-border text-text-primary text-sm font-medium px-4 py-3 rounded-lg
+hover: hover:bg-surface-secondary transition-colors
+disabled: disabled:opacity-50 disabled:cursor-not-allowed
+```
+
 **CTA on gradient** — inverted
 ```
 Primary: bg-white text-accent text-sm font-medium px-6 py-3 rounded-lg
@@ -246,3 +253,52 @@ Last updated: 2026-06-16
 
 **Pattern notes:**
 CTA gradient is always `bg-cta-gradient` (never inline). On gradient sections, primary button inverts to `bg-white text-accent`. Decorative orbs shrink at mobile (`w-64`) to avoid visual noise. CTA buttons follow the same stacking pattern as Hero buttons: `flex-col sm:flex-row`.
+
+---
+
+### Auth Page (Login)
+
+File: `app/(auth)/login/page.tsx`
+Last updated: 2026-06-16
+
+| Property         | Class                                                                         |
+| ---------------- | ----------------------------------------------------------------------------- |
+| Page background  | `bg-background`                                                               |
+| Page layout      | `min-h-screen flex items-center justify-center px-4 py-12`                   |
+| Card max-width   | `w-full max-w-sm`                                                             |
+| Card background  | `bg-surface`                                                                  |
+| Card border      | `border border-border`                                                        |
+| Card radius      | `rounded-2xl`                                                                 |
+| Card padding     | `p-8`                                                                         |
+| Logo             | `next/image` — `h-9 w-auto` — container: `flex justify-center mb-8`          |
+| Heading          | `text-xl font-semibold text-text-primary text-center`                         |
+| Subtitle         | `text-sm text-text-secondary text-center`                                     |
+| Button stack     | `flex flex-col gap-3` (always stacked — no responsive change)                 |
+| OAuth button     | `bg-background border border-border text-text-primary text-sm font-medium px-4 py-3 rounded-lg` |
+| OAuth hover      | `hover:bg-surface-secondary transition-colors`                                |
+| OAuth disabled   | `disabled:opacity-50 disabled:cursor-not-allowed`                             |
+| Error text       | `mt-4 text-sm text-error text-center`                                         |
+| Legal text       | `mt-6 text-xs text-text-secondary text-center leading-relaxed`                |
+| Legal link       | `text-accent hover:underline`                                                  |
+| Shadow           | none                                                                           |
+
+**Pattern notes:**
+Auth cards always use `rounded-2xl` (vs `rounded-lg` for page-level buttons). Logo is `h-9 w-auto` on auth pages (1px taller than navbar's `h-8` — more prominent on a centered page). OAuth buttons always stack (`flex-col`) with no responsive breakpoint — they never go side-by-side. Error text uses `text-error` token, never a raw red class.
+
+---
+
+### Full-Page Loading
+
+Files: `app/(auth)/login/page.tsx` (auth-check state), `app/(auth)/callback/page.tsx`
+Last updated: 2026-06-16
+
+| Property       | Class                                                                     |
+| -------------- | ------------------------------------------------------------------------- |
+| Page wrapper   | `min-h-screen flex items-center justify-center bg-background`             |
+| Content layout | `flex flex-col items-center gap-4`                                        |
+| Spinner (lg)   | `w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin` |
+| Spinner (sm)   | `w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin` |
+| Loading text   | `text-sm text-text-secondary`                                             |
+
+**Pattern notes:**
+Two spinner sizes: `w-8 h-8` when paired with a loading label (`Signing you in…`), `w-6 h-6` for silent/transitional checks with no label. Always `border-accent border-t-transparent` — the transparent top creates the spinning arc effect. Background always `bg-background` — never `bg-surface`. `gap-4` between spinner and text.

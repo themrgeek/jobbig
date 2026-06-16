@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import posthog from "posthog-js";
 
 export function Navbar() {
   return (
@@ -21,18 +24,21 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-6 lg:gap-8">
           <Link
             href="/dashboard"
+            onClick={() => posthog.capture("nav_link_clicked", { destination: "dashboard" })}
             className="text-sm font-medium text-text-dark hover:text-accent transition-colors"
           >
             Dashboard
           </Link>
           <Link
             href="/find-jobs"
+            onClick={() => posthog.capture("nav_link_clicked", { destination: "find_jobs" })}
             className="text-sm font-medium text-text-dark hover:text-accent transition-colors"
           >
             Find Jobs
           </Link>
           <Link
             href="/profile"
+            onClick={() => posthog.capture("nav_link_clicked", { destination: "profile" })}
             className="text-sm font-medium text-text-dark hover:text-accent transition-colors"
           >
             Profile
@@ -42,6 +48,7 @@ export function Navbar() {
         {/* CTA — always visible */}
         <Link
           href="/login"
+          onClick={() => posthog.capture("navbar_cta_clicked")}
           className="shrink-0 bg-accent text-accent-foreground text-sm font-medium px-4 sm:px-5 py-2 rounded-full hover:opacity-90 transition-opacity whitespace-nowrap"
         >
           <span className="hidden sm:inline">Start for Free</span>
