@@ -83,3 +83,12 @@ body {
   color: var(--color-text-primary);
   margin: 0;
 }
+
+.bg-cta-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    var(--color-accent-dark) 50%,
+    var(--color-info-medium) 100%
+  );
+}
