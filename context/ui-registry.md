@@ -302,3 +302,107 @@ Last updated: 2026-06-16
 
 **Pattern notes:**
 Two spinner sizes: `w-8 h-8` when paired with a loading label (`Signing you in…`), `w-6 h-6` for silent/transitional checks with no label. Always `border-accent border-t-transparent` — the transparent top creates the spinning arc effect. Background always `bg-background` — never `bg-surface`. `gap-4` between spinner and text.
+
+---
+
+### Profile Page — Completion Banner
+
+File: `app/profile/page.tsx`
+Last updated: 2026-06-17
+
+| Property        | Class                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------ |
+| Card            | `bg-surface border border-border rounded-2xl p-6 shadow-[0px_1px_3px_rgba(0,0,0,0.1),...]`           |
+| Layout          | `flex items-center justify-between gap-6`                                                              |
+| Warning icon    | `text-error` — paired with `text-sm font-semibold` label                                               |
+| Missing badges  | `px-2.5 py-0.5 bg-error/10 text-error text-xs font-semibold rounded-full tracking-wide`               |
+| Ring (SVG)      | outer `stroke-border` / fill `stroke-error`, 96×96px, `rotate(-90 48 48)` start at top                |
+| Ring text       | `fontSize: 16, fontWeight: 600, fill: text-primary`                                                    |
+
+**Pattern notes:**
+Completion ring is a raw SVG — `stroke-dashoffset` drives the arc. Error color (`--color-error`) used for both the ring fill and missing-field badges. Ring is `shrink-0` to prevent squishing on small screens.
+
+---
+
+### Profile Page — Resume Upload
+
+File: `app/profile/page.tsx`
+Last updated: 2026-06-17
+
+| Property         | Class                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| Drop zone (idle) | `border-2 border-dashed border-border bg-surface-secondary rounded-xl py-10 px-6`     |
+| Drop zone (over) | `border-accent bg-accent-muted`                                                        |
+| Upload icon box  | `w-10 h-10 rounded-full bg-accent-light flex items-center justify-center`              |
+| Upload icon      | `text-accent` size 18                                                                  |
+| Footer row       | `mt-4 flex items-center justify-between gap-4`                                         |
+| Generate button  | `bg-accent text-accent-foreground` — primary style with `Sparkles` icon                |
+
+**Pattern notes:**
+Drop zone border and background swap on `isDragging`. File input is hidden (`sr-only`) behind a `<label>` styled as a secondary button. "Remove" link on uploaded file uses `text-error`.
+
+---
+
+### Profile Page — Section Card
+
+File: `app/profile/page.tsx`
+Last updated: 2026-06-17
+
+```
+bg-surface border border-border rounded-2xl p-6 shadow-[0px_1px_3px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]
+```
+
+Title: `text-base font-semibold text-text-primary`
+Subtitle: `text-sm text-text-secondary mt-0.5`
+Divider between sub-sections: `border-t border-border`
+
+---
+
+### Profile Page — Form Inputs
+
+File: `app/profile/page.tsx`
+Last updated: 2026-06-17
+
+| Element         | Class                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------- |
+| Label           | `text-xs font-medium text-text-secondary uppercase tracking-wide`                                   |
+| Text input      | `w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent` |
+| Select          | same as input + `appearance-none cursor-pointer` — wrapped in relative div with `ChevronDown` icon  |
+| Readonly input  | same as text input + `opacity-60 cursor-not-allowed`                                                |
+| Textarea        | same as text input + `resize-none`                                                                  |
+| Grid layout     | `grid grid-cols-1 sm:grid-cols-2 gap-4`                                                             |
+
+**Pattern notes:**
+All selects are wrapped in a `SelectWrapper` div with an absolutely-positioned `ChevronDown` icon (right-3, pointer-events-none). Labels always uppercase + tracking-wide at 12px.
+
+---
+
+### Profile Page — Tag Input
+
+File: `app/profile/page.tsx`
+Last updated: 2026-06-17
+
+| Element    | Class                                                                                    |
+| ---------- | ---------------------------------------------------------------------------------------- |
+| Container  | `flex flex-col gap-2`                                                                    |
+| Row        | `flex gap-2` — text input + Add button                                                   |
+| Add button | `px-4 py-2 bg-surface border border-border text-text-primary text-sm font-medium rounded-lg hover:bg-surface-secondary` |
+| Tag chip   | `inline-flex items-center gap-1 px-3 py-1 bg-accent-light text-accent text-xs font-medium rounded-full` |
+| Remove X   | size 11, `hover:opacity-70`                                                               |
+
+**Pattern notes:**
+Enter key also triggers add. Tags stored as `string[]` in parent state. Duplicate tags are silently ignored.
+
+---
+
+### Profile Page — Work Experience Card
+
+File: `app/profile/page.tsx`
+Last updated: 2026-06-17
+
+| Element              | Class                                                        |
+| -------------------- | ------------------------------------------------------------ |
+| Card border          | `border border-border rounded-xl p-5`                        |
+| "Currently working"  | `<input type="checkbox">` inline with end-date field, disables end-date input when checked |
+| Remove button        | `text-xs text-error` — only shown when >1 experience exists  |
+| Add role button      | `text-xs font-medium text-accent` with `Plus` icon — hidden when 3 experiences reached |
