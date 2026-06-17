@@ -1,66 +1,49 @@
-# Memory — PostHog Instrumentation
+# Memory — Phase 1 Complete / Feature 05 Next
 
-Last updated: 2026-06-16
+Last updated: 2026-06-17
 
 ## What was built
 
-**Feature 02 — Auth (already existed from last session):**
-- `lib/insforge.ts` — InsForge client singleton
-- `app/(auth)/login/page.tsx` — Google + GitHub OAuth, auth-check on mount
-- `app/(auth)/callback/page.tsx` — OAuth callback, session cookie, posthog.identify()
-- `middleware.ts` — Protects /dashboard, /profile, /find-jobs
-- `app/dashboard/page.tsx` — Placeholder dashboard
+**PostHog review issues resolved (3 fixes):**
+- `lib/posthog-client.ts` — created as re-export of posthog singleton from `posthog-js`
+- All 7 files that imported `posthog-js` directly updated to import from `@/lib/posthog-client`: `Hero.tsx`, `Navbar.tsx`, `HowItWorks.tsx`, `Footer.tsx`, `app/(auth)/login/page.tsx`, `app/(auth)/callback/page.tsx`, `app/dashboard/page.tsx`
+- `context/code-standards.md` — approved all 10 active PostHog events + 4 future agent events in the events table; renamed env var `NEXT_PUBLIC_POSTHOG_KEY` → `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` with correct "Used In" values
 
-**Feature 03 — PostHog (wizard-initialized + events added this session):**
-- `instrumentation-client.ts` — PostHog init via Next.js instrumentation pattern (wizard). Uses `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` and `/ingest` proxy. `capture_exceptions: true`, `defaults: "2026-01-30"`.
-- `lib/posthog-server.ts` — Server-side PostHog client (flushAt: 1, flushInterval: 0)
-- `next.config.ts` — Reverse proxy rewrites for `/ingest/` → PostHog
-- `posthog-js` and `posthog-node` both in package.json
-
-**Events added this session:**
-- `components/layout/Navbar.tsx` — `nav_link_clicked` ({ destination: "dashboard" | "find_jobs" | "profile" })
-- `components/layout/Footer.tsx` — converted to "use client", added `footer_link_clicked` ({ label: "privacy" | "terms" })
-
-**Pre-existing events (from prior session + wizard):**
-- `oauth_login_initiated` ({ provider }) — login page
-- `auth_callback_success` / `auth_callback_failed` ({ reason }) — callback page
-- `posthog.identify(user.id, { email })` — callback page
-- `dashboard_viewed` — dashboard page
-- `cta_get_started_clicked`, `cta_find_first_match_clicked` — Hero.tsx
-- `cta_how_it_works_clicked` ({ label }) — HowItWorks.tsx
-- `navbar_cta_clicked` — Navbar.tsx
+**Feature 04 — Database Schema (via InsForge MCP):**
+- `profiles` table — 24 columns, primary key is `uuid REFERENCES auth.users(id) ON DELETE CASCADE`
+- `agent_runs` table — FK to profiles
+- `jobs` table — FK to agent_runs + profiles, `source CHECK (source IN ('search', 'url'))`, `company_research jsonb`
+- `agent_logs` table — FK to agent_runs, profiles, nullable `job_id` FK to jobs
+- RLS enabled on all 4 tables — 16 policies total (`user_id = auth.uid()`, profiles uses `id = auth.uid()`)
+- Auto-profile trigger `on_auth_user_created` — `AFTER INSERT ON auth.users`, SECURITY DEFINER, inserts `(id, email)` into profiles
+- `resumes` storage bucket — private (`isPublic: false`)
+- `context/progress-tracker.md` — Features 02, 03, 04 marked complete, phase updated to Phase 2
 
 ## Decisions made
 
-- **Wizard pattern over layout provider**: PostHog initialized in `instrumentation-client.ts` (Next.js 15.3+ pattern) instead of wrapping layout with a provider. Components import `posthog` directly from `posthog-js` — no lib wrapper.
-- **Two-layer session management**: `insforge_session=1` client cookie for middleware; real auth via InsForge's own session.
-- **Post-auth always → `/dashboard`**: No ?from tracking.
-- **`redirectTo` is dynamic**: `window.location.origin + '/callback'`.
+- **`lib/posthog-client.ts` is the canonical browser import** — all components import from `@/lib/posthog-client`, never directly from `posthog-js`. PostHog init stays in `instrumentation-client.ts`.
+- **Auto-profile on signup** — trigger creates the profiles row. Feature 06 (Profile Save Logic) only needs to UPDATE, never INSERT or upsert.
+- **profiles.id = auth.users.id** — no separate user_id column on profiles; other tables use `user_id` FK referencing `profiles(id)`.
+- **env var is `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`** — reconciled in both code and code-standards.md. `NEXT_PUBLIC_POSTHOG_HOST` is the second PostHog env var.
 
 ## Problems solved
 
-- **InsForge MCP not loading**: Requires VSCode window reload (Cmd+Shift+P → "Developer: Reload Window").
+- No new problems surfaced this session — all work was clean.
 
 ## Current state
 
-- **Feature 01 (Homepage)**: Complete ✅ — in progress-tracker.md
-- **Feature 02 (Auth)**: Built ✅ — NOT yet marked complete in progress-tracker.md
-- **Feature 03 (PostHog)**: Instrumented ✅ but 3 review issues need resolving before marking complete
-- **Feature 04 (Database Schema)**: Not started
-
-**3 open review issues (must resolve before Feature 04):**
-1. **Unapproved events** — 10 events exist in code; `code-standards.md` only approves 4 (`job_search_started`, `job_found`, `profile_completed`, `company_researched`). Update `code-standards.md` to approve all current events (or remove the ones that don't belong).
-2. **Env var name mismatch** — code uses `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` everywhere; `code-standards.md` specifies `NEXT_PUBLIC_POSTHOG_KEY`. Pick one and reconcile both code and code-standards.md.
-3. **`lib/posthog-client.ts` missing** — `architecture.md` lists this file as the PostHog browser singleton. Currently components import directly from `posthog-js`. Either create the wrapper file or update architecture.md to reflect the instrumentation-client.ts pattern.
+- **Feature 01 (Homepage)**: Complete ✅
+- **Feature 02 (Auth)**: Complete ✅
+- **Feature 03 (PostHog)**: Complete ✅
+- **Feature 04 (Database Schema)**: Complete ✅
+- **Feature 05 (Profile Page — Full UI)**: Not started
+- **Phase 1**: Fully done
 
 ## Next session starts with
 
-1. Resolve the 3 review issues above (update code-standards.md and architecture.md)
-2. Mark Feature 02 complete in `context/progress-tracker.md`
-3. Mark Feature 03 complete in `context/progress-tracker.md` (after resolving issues)
-4. Start Feature 04 — Database Schema: create profiles, agent_runs, jobs, agent_logs tables + resumes storage bucket via InsForge MCP
+Start Feature 05 — Profile Page Full UI. Run `/architect the feature 5` first, then build the complete profile page with mock data. No save logic. Key sections from build-plan.md: completion banner, resume upload area, profile form (Personal Info, Professional Info, Work Experience × 3, Education, Job Preferences), Save Profile button.
 
 ## Open questions
 
-- Has the OAuth flow been tested end-to-end? "Nothing happening" was the symptom last session — error handling was improved but a successful login was never confirmed.
-- Does InsForge require `allowedRedirectUrls` to include `http://localhost:3000/callback`? Backend metadata showed empty `allowedRedirectUrls` — unconfirmed whether this blocks OAuth.
+- Has OAuth been tested end-to-end? A successful login was never confirmed — "nothing happening" was the last known symptom before error handling was improved.
+- Does InsForge require `allowedRedirectUrls` to include `http://localhost:3000/callback`? Backend metadata showed empty `allowedRedirectUrls` — still unconfirmed whether this blocks OAuth.

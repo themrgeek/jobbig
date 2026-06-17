@@ -1,10 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { insforge } from "@/lib/insforge";
 import posthog from "@/lib/posthog-client";
 
 export function Hero() {
+  const [ctaHref, setCtaHref] = useState("/login");
+
+  useEffect(() => {
+    let ignored = false;
+    insforge.auth.getCurrentUser().then(({ data }) => {
+      if (!ignored && data?.user) setCtaHref("/dashboard");
+    }).catch(() => {});
+    return () => { ignored = true; };
+  }, []);
+
   return (
     <section className="bg-surface pt-12 md:pt-20 pb-0">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 flex flex-col items-center text-center">
@@ -21,15 +33,21 @@ export function Hero() {
 
         <div className="mt-6 md:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full sm:w-auto">
           <Link
-            href="/login"
-            onClick={() => posthog.capture("cta_get_started_clicked", { location: "hero" })}
+            href={ctaHref}
+            onClick={() =>
+              posthog.capture("cta_get_started_clicked", { location: "hero" })
+            }
             className="bg-accent text-accent-foreground text-sm font-medium px-6 py-3 rounded-lg hover:opacity-90 transition-opacity text-center"
           >
             Get Started
           </Link>
           <Link
-            href="/login"
-            onClick={() => posthog.capture("cta_find_first_match_clicked", { location: "hero" })}
+            href={ctaHref}
+            onClick={() =>
+              posthog.capture("cta_find_first_match_clicked", {
+                location: "hero",
+              })
+            }
             className="bg-surface border border-border text-text-primary text-sm font-medium px-6 py-3 rounded-lg hover:bg-surface-secondary transition-colors text-center"
           >
             Find Your First Match

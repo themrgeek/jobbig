@@ -1,10 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { insforge } from "@/lib/insforge";
 import posthog from "@/lib/posthog-client";
 
 export function HowItWorks() {
+  const [ctaHref, setCtaHref] = useState("/login");
+
+  useEffect(() => {
+    let ignored = false;
+    insforge.auth.getCurrentUser().then(({ data }) => {
+      if (!ignored && data?.user) setCtaHref("/dashboard");
+    }).catch(() => {});
+    return () => { ignored = true; };
+  }, []);
+
   return (
     <>
       {/* Testimonial */}
@@ -59,14 +71,14 @@ export function HowItWorks() {
           </p>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 md:gap-4 max-w-xs sm:max-w-none mx-auto">
             <Link
-              href="/login"
+              href={ctaHref}
               onClick={() => posthog.capture("cta_how_it_works_clicked", { label: "get_started" })}
               className="bg-white text-accent text-sm font-medium px-6 py-3 rounded-lg hover:bg-surface-secondary transition-colors text-center"
             >
               Get Started
             </Link>
             <Link
-              href="/login"
+              href={ctaHref}
               onClick={() => posthog.capture("cta_how_it_works_clicked", { label: "learn_more" })}
               className="bg-white/10 border border-white/25 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-white/20 transition-colors text-center"
             >
