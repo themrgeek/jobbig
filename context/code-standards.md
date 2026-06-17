@@ -222,14 +222,24 @@ const insforge = await createInsforgeServer();
 
 All PostHog events must use these exact event names. Never invent new event names without adding them here first.
 
-| Event                | When                                       | Key Properties             |
-| -------------------- | ------------------------------------------ | -------------------------- |
-| `job_search_started` | Find Jobs button clicked                   | userId, jobTitle, location |
-| `job_found`          | Each job discovered and saved              | userId, source, matchScore |
-| `profile_completed`  | User saves complete profile for first time | userId                     |
-| `company_researched` | Company research dossier generated         | userId, jobId, company     |
+| Event                        | When                                       | Key Properties              |
+| ---------------------------- | ------------------------------------------ | --------------------------- |
+| `oauth_login_initiated`      | OAuth button clicked on login page         | provider                    |
+| `auth_callback_success`      | OAuth callback succeeds, user confirmed    | —                           |
+| `auth_callback_failed`       | OAuth callback fails                       | reason                      |
+| `dashboard_viewed`           | Dashboard page mounts                      | —                           |
+| `nav_link_clicked`           | Nav link clicked in Navbar                 | destination                 |
+| `navbar_cta_clicked`         | "Start for Free" CTA clicked in Navbar     | —                           |
+| `cta_get_started_clicked`    | "Get Started" CTA clicked in Hero          | location                    |
+| `cta_find_first_match_clicked` | "Find Your First Match" CTA clicked      | location                    |
+| `cta_how_it_works_clicked`   | CTA clicked in HowItWorks section          | label                       |
+| `footer_link_clicked`        | Footer link clicked                        | label                       |
+| `job_search_started`         | Find Jobs button clicked                   | userId, jobTitle, location  |
+| `job_found`                  | Each job discovered and saved              | userId, source, matchScore  |
+| `profile_completed`          | User saves complete profile for first time | userId                      |
+| `company_researched`         | Company research dossier generated         | userId, jobId, company      |
 
-These four events are the only events in this project. Do not add more without updating this list first.
+Do not add more events without updating this list first.
 
 `job_found` powers the Jobs Found Over Time and Match Score Distribution dashboard charts.
 `company_researched` powers the Company Research Activity dashboard chart.
@@ -250,8 +260,8 @@ All environment variables defined in `.env.local` for development. Never hardcod
 | `OPENAI_API_KEY`                | agent/ functions       |
 | `ADZUNA_APP_ID`                 | lib/adzuna.ts          |
 | `ADZUNA_APP_KEY`                | lib/adzuna.ts          |
-| `NEXT_PUBLIC_POSTHOG_KEY`       | lib/posthog-client.ts  |
-| `NEXT_PUBLIC_POSTHOG_HOST`      | lib/posthog-client.ts  |
+| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` | instrumentation-client.ts, lib/posthog-server.ts |
+| `NEXT_PUBLIC_POSTHOG_HOST`          | lib/posthog-server.ts                            |
 
 `NEXT_PUBLIC_` prefix means the variable is exposed to the browser. Never add `NEXT_PUBLIC_` to secret keys.
 
