@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import posthog from "posthog-js";
+import posthog from "@/lib/posthog-client";
 
 export default function DashboardPage() {
   useEffect(() => {

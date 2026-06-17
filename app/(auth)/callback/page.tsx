@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { insforge } from "@/lib/insforge";
-import posthog from "posthog-js";
+import posthog from "@/lib/posthog-client";
 
 export default function AuthCallback() {
   const router = useRouter();

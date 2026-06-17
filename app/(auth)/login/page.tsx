@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { insforge } from "@/lib/insforge";
-import posthog from "posthog-js";
+import posthog from "@/lib/posthog-client";
 
 export default function LoginPage() {
   const router = useRouter();
